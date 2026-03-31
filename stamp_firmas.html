@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Firma Masivo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+  --bg: #111111;
+  --surface: #1e1e1e;
+  --surface2: #272727;
+  --border: #383838;
+  --border-active: #ff6d42;
+  --accent: #ff6d42;
+  --accent2: #ffab85;
+  --text: #f2f2f2;
+  --text2: #b0b0b0;
+  --text3: #7a7a7a;
+  --success: #66bb6a;
+  --error: #ef5350;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* ── Header ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 28px 48px;
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -.5px;
+    color: var(--accent);
+  }
+  header span {
+    font-size: 15px;
+    color: var(--text3);
+    font-family: var(--mono);
+  }
+  .badge {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  /* ── Layout ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 48px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* ── Section ── */
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── Signature Zones ── */
+  .sig-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .sig-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .sig-panel-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .side-tag {
+    font-size: 12px;
+    font-family: var(--mono);
+    padding: 3px 8px;
+    border-radius: 2px;
+    margin-left: auto;
+  }
+  .side-tag.left { background: #1a2744; color: #6fa3f5; }
+  .side-tag.right { background: #2a1a1a; color: var(--accent2); }
+
+  .drop-zone {
+    min-height: 120px;
+    border: 2px dashed var(--border);
+    margin: 16px;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all .2s;
+    padding: 20px;
+    position: relative;
+  }
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(255,87,34,.04);
+  }
+  .drop-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .drop-icon {
+    font-size: 30px;
+    opacity: .3;
+  }
+  .drop-text {
+    font-size: 14px;
+    color: var(--text3);
+    font-family: var(--mono);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* Signature thumbnails */
+  .sig-thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 16px 16px;
+  }
+  .sig-thumb {
+    position: relative;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    width: 110px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sig-thumb img {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain;
+  }
+  .sig-thumb .remove-btn {
+    position: absolute;
+    top: 3px; right: 3px;
+    width: 18px; height: 18px;
+    background: var(--error);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity .15s;
+    font-family: var(--mono);
+  }
+  .sig-thumb:hover .remove-btn { opacity: 1; }
+  .sig-thumb .sig-name {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    font-size: 11px;
+    font-family: var(--mono);
+    background: rgba(0,0,0,.7);
+    color: var(--text2);
+    padding: 2px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Controls ── */
+  .controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .control-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 20px;
+  }
+  .control-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .control-label .tag {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background: var(--surface2);
+    color: var(--text3);
+    border: 1px solid var(--border);
+  }
+
+  /* Slider */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .slider-val {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--accent);
+    min-width: 45px;
+    text-align: right;
+  }
+
+  /* Select */
+  select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  select:focus { border-color: var(--accent); }
+
+  /* ── PDF Drop zone ── */
+  .pdf-zone {
+    background: var(--surface);
+    border: 2px dashed var(--border);
+    border-radius: 4px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+  }
+  .pdf-zone:hover, .pdf-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(255,87,34,.03);
+  }
+  .pdf-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .pdf-zone-icon { font-size: 42px; margin-bottom: 12px; }
+  .pdf-zone h3 {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+  .pdf-zone p {
+    font-size: 14px;
+    color: var(--text3);
+    font-family: var(--mono);
+  }
+
+  /* PDF file list */
+  .pdf-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .pdf-list::-webkit-scrollbar { width: 4px; }
+  .pdf-list::-webkit-scrollbar-track { background: var(--surface); }
+  .pdf-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .pdf-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 14px;
+  }
+  .pdf-item .pdf-icon { color: var(--accent2); font-size: 18px; }
+  .pdf-item .pdf-name { flex: 1; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pdf-item .pdf-size { color: var(--text3); font-size: 12px; flex-shrink: 0; }
+  .pdf-item .pdf-status {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text3);
+    flex-shrink: 0;
+  }
+  .pdf-item .pdf-status.done { background: var(--success); }
+  .pdf-item .pdf-status.error { background: var(--error); }
+  .pdf-item .pdf-status.processing {
+    background: var(--accent);
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .3; }
+  }
+  .pdf-item .remove-pdf {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 2px;
+    transition: color .15s;
+    flex-shrink: 0;
+  }
+  .pdf-item .remove-pdf:hover { color: var(--error); }
+
+  .files-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .files-count {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text3);
+  }
+  .clear-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .clear-btn:hover { border-color: var(--error); color: var(--error); }
+
+  /* ── Progress ── */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    display: none;
+  }
+  .progress-section.visible { display: block; }
+  .progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .progress-title {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text2);
+  }
+  .progress-stat {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .progress-bar-bg {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width .3s ease;
+    width: 0%;
+  }
+  .progress-log {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text3);
+    max-height: 100px;
+    overflow-y: auto;
+    line-height: 1.7;
+  }
+  .log-ok { color: var(--success); }
+  .log-err { color: var(--error); }
+  .log-info { color: var(--text3); }
+
+  /* ── Action Bar ── */
+  .action-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 20px 48px;
+    border-top: 1px solid var(--border);
+    position: sticky;
+    bottom: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .btn-process {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 12px 32px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-process:hover:not(:disabled) { background: var(--accent2); transform: translateY(-1px); }
+  .btn-process:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  .btn-download {
+    background: var(--surface);
+    color: var(--success);
+    border: 1px solid var(--success);
+    font-family: var(--mono);
+    font-size: 15px;
+    padding: 12px 28px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all .2s;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-download.visible { display: flex; }
+  .btn-download:hover { background: var(--success); color: #000; }
+
+  .action-status {
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+    text-align: right;
+  }
+
+  /* Tooltip for controls */
+  .hint {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: var(--mono);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* Rotation preview mini diagram */
+  .rot-preview {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+  .rot-box {
+    width: 36px; height: 50px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--surface2);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .rot-box .page-content {
+    width: 20px; height: 30px;
+    background: var(--border);
+    border-radius: 1px;
+  }
+  .rot-sig {
+    position: absolute;
+    font-size: 8px;
+    font-family: var(--mono);
+    color: var(--accent2);
+    writing-mode: vertical-lr;
+    white-space: nowrap;
+  }
+  .rot-sig.left { left: 0; text-orientation: mixed; transform: rotate(180deg); }
+  .rot-sig.right { right: 0; }
+
+  /* Scrollbar global */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>▐ PDF·FIRMA</h1>
+  <span>// estampador masivo de firmas en márgenes</span>
+  <div class="badge">JS · pdf-lib · sin servidor</div>
+</header>
+
+<main>
+
+  <!-- ── PASO 1: FIRMAS ── -->
+  <section class="section">
+    <div class="section-label">
+      <span class="step-num">1</span>
+      Cargar firmas escaneadas
+    </div>
+
+    <div class="sig-grid">
+      <!-- Lado Izquierdo -->
+      <div class="sig-panel">
+        <div class="sig-panel-header">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="1" y="1" width="3" height="12" rx="1" fill="#6fa3f5" opacity=".6"/>
+            <rect x="5" y="3" width="8" height="1.5" rx=".5" fill="#444"/>
+            <rect x="5" y="6" width="6" height="1.5" rx=".5" fill="#444"/>
+            <rect x="5" y="9" width="7" height="1.5" rx=".5" fill="#444"/>
+          </svg>
+          Margen Izquierdo
+          <span class="side-tag left">IZQ</span>
+        </div>
+        <div class="drop-zone" id="dropLeft">
+          <input type="file" accept="image/png,image/jpeg" multiple id="fileLeft">
+          <div class="drop-icon">🖊</div>
+          <div class="drop-text">Arrastra imágenes PNG/JPG aquí<br>o haz clic para seleccionar</div>
+        </div>
+        <div class="sig-thumbs" id="thumbsLeft"></div>
+      </div>
+
+      <!-- Lado Derecho -->
+      <div class="sig-panel">
+        <div class="sig-panel-header">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="10" y="1" width="3" height="12" rx="1" fill="#ff8a65" opacity=".6"/>
+            <rect x="1" y="3" width="8" height="1.5" rx=".5" fill="#444"/>
+            <rect x="1" y="6" width="6" height="1.5" rx=".5" fill="#444"/>
+            <rect x="1" y="9" width="7" height="1.5" rx=".5" fill="#444"/>
+          </svg>
+          Margen Derecho
+          <span class="side-tag right">DER</span>
+        </div>
+        <div class="drop-zone" id="dropRight">
+          <input type="file" accept="image/png,image/jpeg" multiple id="fileRight">
+          <div class="drop-icon">🖊</div>
+          <div class="drop-text">Arrastra imágenes PNG/JPG aquí<br>o haz clic para seleccionar</div>
+        </div>
+        <div class="sig-thumbs" id="thumbsRight"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PASO 2: CONFIGURACIÓN ── -->
+  <section class="section">
+    <div class="section-label">
+      <span class="step-num">2</span>
+      Configurar parámetros
+    </div>
+
+    <div class="controls-grid">
+
+      <!-- Ancho del margen -->
+      <div class="control-card">
+        <div class="control-label">
+          Ancho de margen
+          <span class="tag">px PDF</span>
+        </div>
+        <div class="slider-row">
+          <input type="range" id="marginWidth" min="30" max="150" value="65" step="5">
+          <span class="slider-val" id="marginWidthVal">65 pt</span>
+        </div>
+        <p class="hint">30pt≈10mm &nbsp;·&nbsp; 65pt≈23mm &nbsp;·&nbsp; 115pt≈40mm</p>
+      </div>
+
+      <!-- Rotación izquierda -->
+      <div class="control-card">
+        <div class="control-label">
+          Rotación <span class="tag" style="color:#6fa3f5;border-color:#1a2744">IZQ</span>
+        </div>
+        <select id="rotLeft">
+          <option value="90">90° — texto de abajo↑arriba</option>
+          <option value="-90">−90° — texto de arriba↓abajo</option>
+          <option value="0">0° — sin rotación</option>
+          <option value="180">180° — invertido</option>
+        </select>
+        <p class="hint">90° es lo más común para márgenes izquierdos</p>
+      </div>
+
+      <!-- Rotación derecha -->
+      <div class="control-card">
+        <div class="control-label">
+          Rotación <span class="tag" style="color:#ff8a65;border-color:#2a1a1a">DER</span>
+        </div>
+        <select id="rotRight">
+          <option value="-90" selected>−90° — texto de arriba↓abajo</option>
+          <option value="90">90° — texto de abajo↑arriba</option>
+          <option value="0">0° — sin rotación</option>
+          <option value="180">180° — invertido</option>
+        </select>
+        <p class="hint">−90° es lo más común para márgenes derechos</p>
+      </div>
+
+      <!-- Páginas -->
+      <div class="control-card">
+        <div class="control-label">Páginas a firmar</div>
+        <select id="pagesMode">
+          <option value="all">Todas las páginas</option>
+          <option value="first">Solo primera página</option>
+          <option value="last">Solo última página</option>
+          <option value="firstlast">Primera y última</option>
+        </select>
+        <p class="hint">Aplica a todos los PDFs procesados</p>
+      </div>
+
+      <!-- Padding -->
+      <div class="control-card">
+        <div class="control-label">
+          Margen interior
+          <span class="tag">padding</span>
+        </div>
+        <div class="slider-row">
+          <input type="range" id="padding" min="0" max="30" value="5" step="1">
+          <span class="slider-val" id="paddingVal">5 pt</span>
+        </div>
+        <p class="hint">Espacio entre borde y firma</p>
+      </div>
+
+      <!-- Preview -->
+      <div class="control-card">
+        <div class="control-label">Vista previa</div>
+        <div class="rot-preview">
+          <div class="rot-box">
+            <div class="rot-sig left" id="prevLeft">FIRMA</div>
+            <div class="page-content"></div>
+            <div class="rot-sig right" id="prevRight">FIRMA</div>
+          </div>
+        </div>
+        <p class="hint" style="text-align:center">Diagrama esquemático</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── PASO 3: PDFs ── -->
+  <section class="section">
+    <div class="section-label">
+      <span class="step-num">3</span>
+      Cargar documentos PDF
+    </div>
+
+    <div class="pdf-zone" id="pdfZone">
+      <input type="file" accept=".pdf" multiple id="pdfFiles">
+      <div class="pdf-zone-icon">📄</div>
+      <h3>Arrastra todos tus PDFs aquí</h3>
+      <p>o haz clic · Soporta múltiples archivos simultáneamente</p>
+    </div>
+
+    <div id="pdfListWrap" style="display:none">
+      <div class="files-header">
+        <span class="files-count" id="filesCount">0 archivos</span>
+        <button class="clear-btn" id="clearPdfs">✕ Limpiar lista</button>
+      </div>
+      <div class="pdf-list" id="pdfList"></div>
+    </div>
+  </section>
+
+  <!-- ── PROGRESO ── -->
+  <div class="progress-section" id="progressSection">
+    <div class="progress-header">
+      <span class="progress-title" id="progressTitle">Procesando PDFs…</span>
+      <span class="progress-stat" id="progressStat">0 / 0</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-log" id="progressLog"></div>
+  </div>
+
+</main>
+
+<!-- ── BARRA DE ACCIÓN ── -->
+<div class="action-bar">
+  <button class="btn-process" id="btnProcess" disabled>
+    <span>▶</span> PROCESAR PDFs
+  </button>
+  <button class="btn-download" id="btnDownload">
+    <span>⬇</span> DESCARGAR TODO (.zip)
+  </button>
+  <span class="action-status" id="actionStatus">Carga firmas y PDFs para continuar</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+const state = {
+  sigsLeft: [],   // { name, file, url }
+  sigsRight: [],
+  pdfs: [],       // { name, file, size, status: 'pending'|'processing'|'done'|'error' }
+  results: [],    // { name, bytes }
+};
+
+// ══════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+function log(msg, type='info') {
+  const el = $('progressLog');
+  const line = document.createElement('div');
+  line.className = `log-${type}`;
+  line.textContent = msg;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+function updateActionStatus() {
+  const hasSigs = state.sigsLeft.length > 0 || state.sigsRight.length > 0;
+  const hasPdfs = state.pdfs.length > 0;
+  const btn = $('btnProcess');
+  if (hasSigs && hasPdfs) {
+    btn.disabled = false;
+    $('actionStatus').textContent = `${state.pdfs.length} PDFs · ${state.sigsLeft.length} firma(s) izq · ${state.sigsRight.length} firma(s) der`;
+  } else {
+    btn.disabled = true;
+    if (!hasSigs && !hasPdfs) $('actionStatus').textContent = 'Carga firmas y PDFs para continuar';
+    else if (!hasSigs) $('actionStatus').textContent = 'Falta cargar las imágenes de firma';
+    else $('actionStatus').textContent = 'Falta cargar los archivos PDF';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  SIGNATURE MANAGEMENT
+// ══════════════════════════════════════════════════════
+function addSigs(files, side) {
+  const arr = side === 'left' ? state.sigsLeft : state.sigsRight;
+  const thumbsEl = side === 'left' ? $('thumbsLeft') : $('thumbsRight');
+
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+    const url = URL.createObjectURL(file);
+    const id = Date.now() + Math.random();
+    arr.push({ id, name: file.name, file, url });
+
+    const thumb = document.createElement('div');
+    thumb.className = 'sig-thumb';
+    thumb.dataset.id = id;
+    thumb.innerHTML = `
+      <img src="${url}" alt="${file.name}">
+      <button class="remove-btn" title="Eliminar">✕</button>
+      <span class="sig-name">${file.name}</span>
+    `;
+    thumb.querySelector('.remove-btn').onclick = (e) => {
+      e.stopPropagation();
+      removeSig(id, side);
+    };
+    thumbsEl.appendChild(thumb);
+  }
+  updateActionStatus();
+}
+
+function removeSig(id, side) {
+  const arr = side === 'left' ? state.sigsLeft : state.sigsRight;
+  const thumbsEl = side === 'left' ? $('thumbsLeft') : $('thumbsRight');
+  const idx = arr.findIndex(s => s.id == id);
+  if (idx >= 0) { URL.revokeObjectURL(arr[idx].url); arr.splice(idx, 1); }
+  const el = thumbsEl.querySelector(`[data-id="${id}"]`);
+  if (el) el.remove();
+  updateActionStatus();
+}
+
+// Drop zones for signatures
+['Left','Right'].forEach(side => {
+  const zone = $(`drop${side}`);
+  const input = $(`file${side}`);
+  const s = side.toLowerCase();
+
+  input.addEventListener('change', () => addSigs(input.files, s));
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    addSigs(e.dataTransfer.files, s);
+  });
+});
+
+// ══════════════════════════════════════════════════════
+//  CONTROLS
+// ══════════════════════════════════════════════════════
+$('marginWidth').addEventListener('input', () => {
+  $('marginWidthVal').textContent = $('marginWidth').value + ' pt';
+});
+$('padding').addEventListener('input', () => {
+  $('paddingVal').textContent = $('padding').value + ' pt';
+});
+
+// Rotation preview update
+function updatePreview() {
+  const rotL = parseInt($('rotLeft').value);
+  const rotR = parseInt($('rotRight').value);
+  const leftEl = $('prevLeft');
+  const rightEl = $('prevRight');
+
+  // writing-mode + transform for preview
+  if (rotL === 90) { leftEl.style.transform = 'rotate(180deg)'; leftEl.style.writingMode = 'vertical-lr'; }
+  else if (rotL === -90) { leftEl.style.transform = 'none'; leftEl.style.writingMode = 'vertical-rl'; }
+  else if (rotL === 0) { leftEl.style.transform = 'none'; leftEl.style.writingMode = 'horizontal-tb'; leftEl.style.fontSize = '5px'; }
+  else { leftEl.style.transform = 'rotate(180deg)'; leftEl.style.writingMode = 'horizontal-tb'; }
+
+  if (rotR === -90) { rightEl.style.transform = 'none'; rightEl.style.writingMode = 'vertical-rl'; }
+  else if (rotR === 90) { rightEl.style.transform = 'rotate(180deg)'; rightEl.style.writingMode = 'vertical-lr'; }
+  else if (rotR === 0) { rightEl.style.transform = 'none'; rightEl.style.writingMode = 'horizontal-tb'; rightEl.style.fontSize = '5px'; }
+  else { rightEl.style.transform = 'rotate(180deg)'; rightEl.style.writingMode = 'horizontal-tb'; }
+}
+$('rotLeft').addEventListener('change', updatePreview);
+$('rotRight').addEventListener('change', updatePreview);
+updatePreview();
+
+// ══════════════════════════════════════════════════════
+//  PDF MANAGEMENT
+// ══════════════════════════════════════════════════════
+function addPdfs(files) {
+  for (const file of files) {
+    if (!file.name.toLowerCase().endsWith('.pdf')) continue;
+    // Avoid duplicates
+    if (state.pdfs.find(p => p.name === file.name)) continue;
+    state.pdfs.push({ name: file.name, file, size: file.size, status: 'pending' });
+  }
+  renderPdfList();
+  updateActionStatus();
+}
+
+function renderPdfList() {
+  const list = $('pdfList');
+  const wrap = $('pdfListWrap');
+  list.innerHTML = '';
+
+  if (state.pdfs.length === 0) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  wrap.style.flexDirection = 'column';
+  wrap.style.gap = '8px';
+  $('filesCount').textContent = `${state.pdfs.length} archivo${state.pdfs.length!==1?'s':''}`;
+
+  state.pdfs.forEach((p, idx) => {
+    const item = document.createElement('div');
+    item.className = 'pdf-item';
+    item.id = `pdf-item-${idx}`;
+    item.innerHTML = `
+      <span class="pdf-icon">📄</span>
+      <span class="pdf-name" title="${p.name}">${p.name}</span>
+      <span class="pdf-size">${fmtSize(p.size)}</span>
+      <span class="pdf-status" id="status-${idx}"></span>
+      <button class="remove-pdf" data-idx="${idx}" title="Eliminar">×</button>
+    `;
+    list.appendChild(item);
+  });
+
+  list.querySelectorAll('.remove-pdf').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      state.pdfs.splice(idx, 1);
+      renderPdfList();
+      updateActionStatus();
+    });
+  });
+}
+
+$('pdfFiles').addEventListener('change', () => addPdfs($('pdfFiles').files));
+
+const pdfZone = $('pdfZone');
+pdfZone.addEventListener('dragover', e => { e.preventDefault(); pdfZone.classList.add('drag-over'); });
+pdfZone.addEventListener('dragleave', () => pdfZone.classList.remove('drag-over'));
+pdfZone.addEventListener('drop', e => {
+  e.preventDefault();
+  pdfZone.classList.remove('drag-over');
+  addPdfs(e.dataTransfer.files);
+});
+
+$('clearPdfs').addEventListener('click', () => {
+  state.pdfs = [];
+  renderPdfList();
+  updateActionStatus();
+});
+
+// ══════════════════════════════════════════════════════
+//  IMAGE ROTATION (Canvas)
+// ══════════════════════════════════════════════════════
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+function rotateImageCanvas(img, angleDeg) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const rad = (angleDeg * Math.PI) / 180;
+  const absAngle = ((angleDeg % 360) + 360) % 360;
+
+  if (absAngle === 90 || absAngle === 270) {
+    canvas.width = img.naturalHeight;
+    canvas.height = img.naturalWidth;
+  } else {
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+  }
+
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate(rad);
+  ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+  return canvas;
+}
+
+function canvasToBytes(canvas) {
+  return new Promise(resolve => {
+    canvas.toBlob(blob => {
+      blob.arrayBuffer().then(resolve);
+    }, 'image/png');
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  PDF PROCESSING
+// ══════════════════════════════════════════════════════
+async function prepareSigImages(sigsArr, angleDeg) {
+  const result = [];
+  for (const sig of sigsArr) {
+    const img = await loadImage(sig.url);
+    const canvas = rotateImageCanvas(img, angleDeg);
+    const bytes = await canvasToBytes(canvas);
+    result.push({ bytes, w: canvas.width, h: canvas.height });
+  }
+  return result;
+}
+
+function getPageIndices(total, mode) {
+  if (mode === 'all') return Array.from({length: total}, (_, i) => i);
+  if (mode === 'first') return [0];
+  if (mode === 'last') return [total - 1];
+  if (mode === 'firstlast') return total === 1 ? [0] : [0, total - 1];
+  return Array.from({length: total}, (_, i) => i);
+}
+
+function placeImages(page, preparedImgs, pdfImgObjs, side, marginWidth, padding, pageWidth, pageHeight) {
+  if (preparedImgs.length === 0) return;
+  const n = preparedImgs.length;
+  const zoneH = pageHeight / n;
+
+  preparedImgs.forEach((sig, i) => {
+    const pdfImg = pdfImgObjs[i];
+    const availW = marginWidth - 2 * padding;
+    const availH = zoneH - 2 * padding;
+    const scale = Math.min(availW / sig.w, availH / sig.h);
+    const fw = sig.w * scale;
+    const fh = sig.h * scale;
+
+    // Center within zone (PDF coords: origin = bottom-left)
+    const zoneBottom = i * zoneH;
+    const x = side === 'left'
+      ? padding + (availW - fw) / 2
+      : pageWidth - marginWidth + padding + (availW - fw) / 2;
+    const y = zoneBottom + padding + (availH - fh) / 2;
+
+    page.drawImage(pdfImg, { x, y, width: fw, height: fh });
+  });
+}
+
+async function processSinglePdf(pdfEntry, prepLeft, prepRight, imgBytesLeft, imgBytesRight, marginWidth, padding, pagesMode) {
+  const fileBytes = await pdfEntry.file.arrayBuffer();
+  const pdfDoc = await PDFLib.PDFDocument.load(fileBytes, { ignoreEncryption: true });
+  const pages = pdfDoc.getPages();
+  const total = pages.length;
+  const indices = getPageIndices(total, pagesMode);
+
+  // Embed images once per document
+  const embLeft = [];
+  for (const b of imgBytesLeft) {
+    const emb = await pdfDoc.embedPng(b);
+    embLeft.push(emb);
+  }
+  const embRight = [];
+  for (const b of imgBytesRight) {
+    const emb = await pdfDoc.embedPng(b);
+    embRight.push(emb);
+  }
+
+  for (const idx of indices) {
+    const page = pages[idx];
+    const { width, height } = page.getSize();
+    placeImages(page, prepLeft, embLeft, 'left', marginWidth, padding, width, height);
+    placeImages(page, prepRight, embRight, 'right', marginWidth, padding, width, height);
+  }
+
+  return await pdfDoc.save();
+}
+
+// ══════════════════════════════════════════════════════
+//  MAIN PROCESS HANDLER
+// ══════════════════════════════════════════════════════
+$('btnProcess').addEventListener('click', async () => {
+  const btn = $('btnProcess');
+  btn.disabled = true;
+  $('btnDownload').classList.remove('visible');
+  state.results = [];
+
+  const marginWidth = parseInt($('marginWidth').value);
+  const padding = parseInt($('padding').value);
+  const pagesMode = $('pagesMode').value;
+  const rotL = parseInt($('rotLeft').value);
+  const rotR = parseInt($('rotRight').value);
+
+  $('progressSection').classList.add('visible');
+  $('progressLog').innerHTML = '';
+  $('progressFill').style.width = '0%';
+  $('progressStat').textContent = `0 / ${state.pdfs.length}`;
+  $('progressTitle').textContent = 'Preparando imágenes de firma…';
+
+  try {
+    // Pre-rotate and prepare signature images
+    log('⚙ Rotando imágenes de firma…', 'info');
+    const prepLeft = await prepareSigImages(state.sigsLeft, rotL);
+    const prepRight = await prepareSigImages(state.sigsRight, rotR);
+    const imgBytesLeft = prepLeft.map(p => p.bytes);
+    const imgBytesRight = prepRight.map(p => p.bytes);
+    log(`✓ ${prepLeft.length} firma(s) izquierda · ${prepRight.length} firma(s) derecha listas`, 'ok');
+
+    $('progressTitle').textContent = 'Procesando PDFs…';
+
+    for (let i = 0; i < state.pdfs.length; i++) {
+      const entry = state.pdfs[i];
+      const statusEl = document.getElementById(`status-${i}`);
+      if (statusEl) statusEl.className = 'pdf-status processing';
+
+      try {
+        const bytes = await processSinglePdf(entry, prepLeft, prepRight, imgBytesLeft, imgBytesRight, marginWidth, padding, pagesMode);
+        state.results.push({ name: entry.name, bytes });
+        entry.status = 'done';
+        if (statusEl) statusEl.className = 'pdf-status done';
+        log(`✓ ${entry.name}`, 'ok');
+      } catch(err) {
+        entry.status = 'error';
+        if (statusEl) statusEl.className = 'pdf-status error';
+        log(`✗ ${entry.name}: ${err.message}`, 'err');
+      }
+
+      const pct = Math.round(((i+1) / state.pdfs.length) * 100);
+      $('progressFill').style.width = pct + '%';
+      $('progressStat').textContent = `${i+1} / ${state.pdfs.length}`;
+    }
+
+    const ok = state.results.length;
+    const fail = state.pdfs.length - ok;
+    $('progressTitle').textContent = `Completado: ${ok} exitosos${fail > 0 ? `, ${fail} con errores` : ''}`;
+    log(`─── Finalizado: ${ok}/${state.pdfs.length} PDFs procesados ───`, 'info');
+
+    if (ok > 0) {
+      $('btnDownload').classList.add('visible');
+      $('actionStatus').textContent = `${ok} PDFs listos para descargar`;
+    }
+
+  } catch(err) {
+    log(`Error general: ${err.message}`, 'err');
+    $('progressTitle').textContent = 'Error en el proceso';
+  }
+
+  btn.disabled = false;
+});
+
+// ══════════════════════════════════════════════════════
+//  DOWNLOAD
+// ══════════════════════════════════════════════════════
+$('btnDownload').addEventListener('click', async () => {
+  const btn = $('btnDownload');
+  const origText = btn.innerHTML;
+  btn.innerHTML = '<span>⏳</span> Comprimiendo…';
+  btn.disabled = true;
+
+  try {
+    if (state.results.length === 1) {
+      // Single file: direct download
+      const r = state.results[0];
+      const blob = new Blob([r.bytes], { type: 'application/pdf' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = r.name.replace('.pdf', '_firmado.pdf');
+      a.click();
+    } else {
+      // Multiple: ZIP
+      const zip = new JSZip();
+      const folder = zip.folder('PDFs_firmados');
+      for (const r of state.results) {
+        folder.file(r.name.replace('.pdf', '_firmado.pdf'), r.bytes);
+      }
+      const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'PDFs_firmados.zip';
+      a.click();
+    }
+  } catch(err) {
+    alert('Error al descargar: ' + err.message);
+  }
+
+  btn.innerHTML = origText;
+  btn.disabled = false;
+});
+</script>
+</body>
+</html>
