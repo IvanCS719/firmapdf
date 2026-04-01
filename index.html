@@ -7,21 +7,21 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-  --bg: #111111;
-  --surface: #1e1e1e;
-  --surface2: #272727;
-  --border: #383838;
-  --border-active: #ff6d42;
-  --accent: #ff6d42;
-  --accent2: #ffab85;
-  --text: #f2f2f2;
-  --text2: #b0b0b0;
-  --text3: #7a7a7a;
-  --success: #66bb6a;
-  --error: #ef5350;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'IBM Plex Sans', sans-serif;
-}
+    --bg: #eeecea;
+    --surface: #f7f5f2;
+    --surface2: #e4e1dc;
+    --border: #c4bfb8;
+    --border-active: #c0391a;
+    --accent: #c0391a;
+    --accent2: #a0300f;
+    --text: #111111;
+    --text2: #2e2e2e;
+    --text3: #5a5550;
+    --success: #1b5e20;
+    --error: #b71c1c;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -33,39 +33,7 @@
     padding: 0 0 80px;
   }
 
-  /* ── Header ── */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 28px 48px;
-    display: flex;
-    align-items: baseline;
-    gap: 20px;
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    z-index: 100;
-  }
-  header h1 {
-    font-family: var(--mono);
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: -.5px;
-    color: var(--accent);
-  }
-  header span {
-    font-size: 15px;
-    color: var(--text3);
-    font-family: var(--mono);
-  }
-  .badge {
-    margin-left: auto;
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text3);
-    border: 1px solid var(--border);
-    padding: 4px 10px;
-    border-radius: 2px;
-  }
+
 
   /* ── Layout ── */
   main {
@@ -539,40 +507,61 @@
     line-height: 1.5;
   }
 
-  /* Rotation preview mini diagram */
+  /* Rotation preview diagram */
   .rot-preview {
-    margin-top: 10px;
+    margin-top: 12px;
     display: flex;
     gap: 10px;
     align-items: center;
     justify-content: center;
   }
   .rot-box {
-    width: 36px; height: 50px;
+    width: 160px; height: 220px;
     border: 1px solid var(--border);
-    border-radius: 2px;
-    background: var(--surface2);
+    border-radius: 3px;
+    background: var(--surface);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
   }
   .rot-box .page-content {
-    width: 20px; height: 30px;
-    background: var(--border);
-    border-radius: 1px;
+    width: 90px; height: 160px;
+    background: var(--surface2);
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 8px;
   }
+  .rot-box .page-content::before,
+  .rot-box .page-content::after,
+  .page-line {
+    content: '';
+    display: block;
+    height: 6px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+  .rot-box .page-content::after { width: 65%; }
   .rot-sig {
     position: absolute;
-    font-size: 8px;
+    font-size: 11px;
     font-family: var(--mono);
-    color: var(--accent2);
+    font-weight: 600;
+    color: var(--accent);
     writing-mode: vertical-lr;
     white-space: nowrap;
+    letter-spacing: 1px;
+    background: rgba(192,57,26,.08);
+    padding: 6px 3px;
+    border-radius: 2px;
   }
-  .rot-sig.left { left: 0; text-orientation: mixed; transform: rotate(180deg); }
-  .rot-sig.right { right: 0; }
+  .rot-sig.left { left: 4px; text-orientation: mixed; transform: rotate(180deg); }
+  .rot-sig.right { right: 4px; }
 
   /* Scrollbar global */
   ::-webkit-scrollbar { width: 6px; }
@@ -581,12 +570,6 @@
 </style>
 </head>
 <body>
-
-<header>
-  <h1>▐ PDF·FIRMA</h1>
-  <span>// estampador masivo de firmas en márgenes</span>
-  <div class="badge">JS · pdf-lib · sin servidor</div>
-</header>
 
 <main>
 
@@ -613,7 +596,7 @@
         <div class="drop-zone" id="dropLeft">
           <input type="file" accept="image/png,image/jpeg" multiple id="fileLeft">
           <div class="drop-icon">🖊</div>
-          <div class="drop-text">Arrastra imágenes PNG/JPG aquí<br>o haz clic para seleccionar</div>
+          <div class="drop-text">Arrastra imágenes PNG ó JPG aquí<br>o haz clic para seleccionar</div>
         </div>
         <div class="sig-thumbs" id="thumbsLeft"></div>
       </div>
@@ -633,7 +616,7 @@
         <div class="drop-zone" id="dropRight">
           <input type="file" accept="image/png,image/jpeg" multiple id="fileRight">
           <div class="drop-icon">🖊</div>
-          <div class="drop-text">Arrastra imágenes PNG/JPG aquí<br>o haz clic para seleccionar</div>
+          <div class="drop-text">Arrastra imágenes PNG ó JPG aquí<br>o haz clic para seleccionar</div>
         </div>
         <div class="sig-thumbs" id="thumbsRight"></div>
       </div>
@@ -668,12 +651,11 @@
           Rotación <span class="tag" style="color:#6fa3f5;border-color:#1a2744">IZQ</span>
         </div>
         <select id="rotLeft">
+          <option value="0">0° — sin rotación</option>
           <option value="90">90° — texto de abajo↑arriba</option>
           <option value="-90">−90° — texto de arriba↓abajo</option>
-          <option value="0">0° — sin rotación</option>
           <option value="180">180° — invertido</option>
         </select>
-        <p class="hint">90° es lo más común para márgenes izquierdos</p>
       </div>
 
       <!-- Rotación derecha -->
@@ -682,21 +664,19 @@
           Rotación <span class="tag" style="color:#ff8a65;border-color:#2a1a1a">DER</span>
         </div>
         <select id="rotRight">
-          <option value="-90" selected>−90° — texto de arriba↓abajo</option>
-          <option value="90">90° — texto de abajo↑arriba</option>
           <option value="0">0° — sin rotación</option>
+          <option value="-90">−90° — texto de arriba↓abajo</option>
+          <option value="90">90° — texto de abajo↑arriba</option>
           <option value="180">180° — invertido</option>
         </select>
-        <p class="hint">−90° es lo más común para márgenes derechos</p>
       </div>
 
       <!-- Páginas -->
       <div class="control-card">
         <div class="control-label">Páginas a firmar</div>
         <select id="pagesMode">
+          <option value="exceptlast">Todas excepto la última</option>
           <option value="all">Todas las páginas</option>
-          <option value="first">Solo primera página</option>
-          <option value="last">Solo última página</option>
           <option value="firstlast">Primera y última</option>
         </select>
         <p class="hint">Aplica a todos los PDFs procesados</p>
@@ -716,16 +696,26 @@
       </div>
 
       <!-- Preview -->
-      <div class="control-card">
-        <div class="control-label">Vista previa</div>
+      <div class="control-card" style="grid-column: 1 / -1;">
+        <div class="control-label">Vista previa de orientación</div>
         <div class="rot-preview">
           <div class="rot-box">
             <div class="rot-sig left" id="prevLeft">FIRMA</div>
-            <div class="page-content"></div>
+            <div class="page-content">
+              <span class="page-line" style="width:100%"></span>
+              <span class="page-line" style="width:85%"></span>
+              <span class="page-line" style="width:92%"></span>
+              <span class="page-line" style="width:70%"></span>
+              <span class="page-line" style="width:88%"></span>
+              <span class="page-line" style="width:60%"></span>
+              <span class="page-line" style="width:95%"></span>
+              <span class="page-line" style="width:78%"></span>
+              <span class="page-line" style="width:50%"></span>
+            </div>
             <div class="rot-sig right" id="prevRight">FIRMA</div>
           </div>
         </div>
-        <p class="hint" style="text-align:center">Diagrama esquemático</p>
+        <p class="hint" style="text-align:center; margin-top:12px">Las etiquetas "FIRMA" muestran la orientación final</p>
       </div>
 
     </div>
@@ -735,14 +725,14 @@
   <section class="section">
     <div class="section-label">
       <span class="step-num">3</span>
-      Cargar documentos PDF
+      Cargar documento PDF
     </div>
 
     <div class="pdf-zone" id="pdfZone">
       <input type="file" accept=".pdf" multiple id="pdfFiles">
       <div class="pdf-zone-icon">📄</div>
-      <h3>Arrastra todos tus PDFs aquí</h3>
-      <p>o haz clic · Soporta múltiples archivos simultáneamente</p>
+      <h3>Arrastra tu PDFs aquí</h3>
+      <p>o haz clic · PDFs pesados pueden tardar o fallar por límite de RAM del navegador</p>
     </div>
 
     <div id="pdfListWrap" style="display:none">
@@ -1038,8 +1028,7 @@ async function prepareSigImages(sigsArr, angleDeg) {
 
 function getPageIndices(total, mode) {
   if (mode === 'all') return Array.from({length: total}, (_, i) => i);
-  if (mode === 'first') return [0];
-  if (mode === 'last') return [total - 1];
+  if (mode === 'exceptlast') return total <= 1 ? [] : Array.from({length: total - 1}, (_, i) => i);
   if (mode === 'firstlast') return total === 1 ? [0] : [0, total - 1];
   return Array.from({length: total}, (_, i) => i);
 }
