@@ -508,60 +508,60 @@
   }
 
   /* Rotation preview diagram */
-  .rot-preview {
-    margin-top: 12px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-  }
-  .rot-box {
-    width: 160px; height: 220px;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    background: var(--surface);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-  }
-  .rot-box .page-content {
-    width: 90px; height: 160px;
-    background: var(--surface2);
-    border-radius: 2px;
-    border: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 10px 8px;
-  }
-  .rot-box .page-content::before,
-  .rot-box .page-content::after,
-  .page-line {
-    content: '';
-    display: block;
-    height: 6px;
-    background: var(--border);
-    border-radius: 2px;
-  }
-  .rot-box .page-content::after { width: 65%; }
-  .rot-sig {
-    position: absolute;
-    font-size: 11px;
-    font-family: var(--mono);
-    font-weight: 600;
-    color: var(--accent);
-    writing-mode: vertical-lr;
-    white-space: nowrap;
-    letter-spacing: 1px;
-    background: rgba(192,57,26,.08);
-    padding: 6px 3px;
-    border-radius: 2px;
-  }
-  .rot-sig.left { left: 4px; text-orientation: mixed; transform: rotate(180deg); }
-  .rot-sig.right { right: 4px; }
+.rot-preview {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+.rot-box {
+  width: 220px; height: 220px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.rot-box .page-content {
+  width: 90px; height: 160px;
+  background: var(--surface2);
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 8px;
+}
+.rot-box .page-content::before,
+.rot-box .page-content::after,
+.page-line {
+  content: '';
+  display: block;
+  height: 6px;
+  background: var(--border);
+  border-radius: 2px;
+}
+.rot-box .page-content::after { width: 65%; }
+.rot-sig {
+  position: absolute;
+  font-size: 12px;
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--accent);
+  writing-mode: vertical-lr;
+  white-space: nowrap;
+  letter-spacing: 1px;
+  background: rgba(192,57,26,.08);
+  padding: 6px 3px;
+  border-radius: 2px;
+}
+.rot-sig.left { left: 8px; text-orientation: mixed; transform: rotate(180deg); }
+.rot-sig.right { right: 8px; }
 
   /* Scrollbar global */
   ::-webkit-scrollbar { width: 6px; }
@@ -731,8 +731,8 @@
     <div class="pdf-zone" id="pdfZone">
       <input type="file" accept=".pdf" multiple id="pdfFiles">
       <div class="pdf-zone-icon">📄</div>
-      <h3>Arrastra tu PDFs aquí</h3>
-      <p>o haz clic · PDFs pesados pueden tardar o fallar por límite de RAM del navegador</p>
+      <h3>Arrastra tu PDF aquí</h3>
+      <p>o haz clic · PDF pesados pueden tardar o fallar por límite de RAM del navegador</p>
     </div>
 
     <div id="pdfListWrap" style="display:none">
@@ -747,7 +747,7 @@
   <!-- ── PROGRESO ── -->
   <div class="progress-section" id="progressSection">
     <div class="progress-header">
-      <span class="progress-title" id="progressTitle">Procesando PDFs…</span>
+      <span class="progress-title" id="progressTitle">Procesando PDF…</span>
       <span class="progress-stat" id="progressStat">0 / 0</span>
     </div>
     <div class="progress-bar-bg">
@@ -761,12 +761,12 @@
 <!-- ── BARRA DE ACCIÓN ── -->
 <div class="action-bar">
   <button class="btn-process" id="btnProcess" disabled>
-    <span>▶</span> PROCESAR PDFs
+    <span>▶</span> PROCESAR PDF
   </button>
   <button class="btn-download" id="btnDownload">
-    <span>⬇</span> DESCARGAR TODO (.zip)
+    <span>⬇</span> DESCARGAR
   </button>
-  <span class="action-status" id="actionStatus">Carga firmas y PDFs para continuar</span>
+  <span class="action-status" id="actionStatus">Carga firmas y PDF para continuar</span>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -894,12 +894,12 @@ function updatePreview() {
   // writing-mode + transform for preview
   if (rotL === 90) { leftEl.style.transform = 'rotate(180deg)'; leftEl.style.writingMode = 'vertical-lr'; }
   else if (rotL === -90) { leftEl.style.transform = 'none'; leftEl.style.writingMode = 'vertical-rl'; }
-  else if (rotL === 0) { leftEl.style.transform = 'none'; leftEl.style.writingMode = 'horizontal-tb'; leftEl.style.fontSize = '5px'; }
+  else if (rotL === 0) { leftEl.style.transform = 'none'; leftEl.style.writingMode = 'horizontal-tb';}
   else { leftEl.style.transform = 'rotate(180deg)'; leftEl.style.writingMode = 'horizontal-tb'; }
 
   if (rotR === -90) { rightEl.style.transform = 'none'; rightEl.style.writingMode = 'vertical-rl'; }
   else if (rotR === 90) { rightEl.style.transform = 'rotate(180deg)'; rightEl.style.writingMode = 'vertical-lr'; }
-  else if (rotR === 0) { rightEl.style.transform = 'none'; rightEl.style.writingMode = 'horizontal-tb'; rightEl.style.fontSize = '5px'; }
+  else if (rotR === 0) { rightEl.style.transform = 'none'; rightEl.style.writingMode = 'horizontal-tb';}
   else { rightEl.style.transform = 'rotate(180deg)'; rightEl.style.writingMode = 'horizontal-tb'; }
 }
 $('rotLeft').addEventListener('change', updatePreview);
