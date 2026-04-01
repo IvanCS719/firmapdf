@@ -645,6 +645,30 @@
         <p class="hint">30pt≈10mm &nbsp;·&nbsp; 65pt≈23mm &nbsp;·&nbsp; 115pt≈40mm</p>
       </div>
 
+      <!-- Padding -->
+      <div class="control-card">
+        <div class="control-label">
+          Margen interior
+          <span class="tag">padding</span>
+        </div>
+        <div class="slider-row">
+          <input type="range" id="padding" min="0" max="30" value="4" step="1">
+          <span class="slider-val" id="paddingVal">4 pt</span>
+        </div>
+        <p class="hint">Espacio entre borde y firma</p>
+      </div>
+
+      <!-- Páginas -->
+      <div class="control-card">
+        <div class="control-label">Páginas a firmar</div>
+        <select id="pagesMode">
+          <option value="exceptlast">Todas excepto la última</option>
+          <option value="all">Todas las páginas</option>
+          <option value="firstlast">Primera y última</option>
+        </select>
+        <p class="hint">Aplica a todos los PDFs procesados</p>
+      </div>
+
       <!-- Rotación izquierda -->
       <div class="control-card">
         <div class="control-label">
@@ -669,30 +693,6 @@
           <option value="90">90° — texto de abajo↑arriba</option>
           <option value="180">180° — invertido</option>
         </select>
-      </div>
-
-      <!-- Páginas -->
-      <div class="control-card">
-        <div class="control-label">Páginas a firmar</div>
-        <select id="pagesMode">
-          <option value="exceptlast">Todas excepto la última</option>
-          <option value="all">Todas las páginas</option>
-          <option value="firstlast">Primera y última</option>
-        </select>
-        <p class="hint">Aplica a todos los PDFs procesados</p>
-      </div>
-
-      <!-- Padding -->
-      <div class="control-card">
-        <div class="control-label">
-          Margen interior
-          <span class="tag">padding</span>
-        </div>
-        <div class="slider-row">
-          <input type="range" id="padding" min="0" max="30" value="5" step="1">
-          <span class="slider-val" id="paddingVal">5 pt</span>
-        </div>
-        <p class="hint">Espacio entre borde y firma</p>
       </div>
 
       <!-- Preview -->
