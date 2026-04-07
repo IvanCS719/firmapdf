@@ -1176,6 +1176,7 @@ $('btnDownload').addEventListener('click', async () => {
       a.href = URL.createObjectURL(blob);
       a.download = r.name.replace('.pdf', '_firmado.pdf');
       a.click();
+      URL.revokeObjectURL(a.href); 
     } else {
       // Multiple: ZIP
       const zip = new JSZip();
@@ -1188,10 +1189,14 @@ $('btnDownload').addEventListener('click', async () => {
       a.href = URL.createObjectURL(blob);
       a.download = 'PDFs_firmados.zip';
       a.click();
+      URL.revokeObjectURL(a.href);
     }
   } catch(err) {
     alert('Error al descargar: ' + err.message);
   }
+
+  state.results = [];                              // ← agrega aquí
+  $('btnDownload').classList.remove('visible');  
 
   btn.innerHTML = origText;
   btn.disabled = false;
